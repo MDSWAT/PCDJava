@@ -1,0 +1,42 @@
+public class StructuraFireDaemon {
+
+    private static final Runnable SARCINA = () -> {
+        Thread t = Thread.currentThread();
+        System.out.println("Fir: " + t.getName()
+                + " | Grupa: " + t.getThreadGroup().getName()
+                + " | Prioritate: " + t.getPriority()
+                + " | Daemon: " + t.isDaemon());
+    };
+
+    private static Thread creaza(ThreadGroup grup, String nume, int prioritate) {
+        Thread t = new Thread(grup, SARCINA, nume);
+        t.setPriority(prioritate);
+        t.setDaemon(true);
+        return t;
+    }
+
+    public static void main(String[] args) throws InterruptedException {
+
+        ThreadGroup gMain = new ThreadGroup("Main");
+        ThreadGroup g1    = new ThreadGroup(gMain, "G1");
+        ThreadGroup g2    = new ThreadGroup(gMain, "G2");
+        ThreadGroup g3    = new ThreadGroup(g1,    "G3");
+
+        Thread[] fire = {
+                creaza(g3, "Tha", 3),
+                creaza(g3, "Thb", 3),
+                creaza(g3, "Th3", 5),
+                creaza(g1, "Th1", 7),
+                creaza(g1, "Th2", 7),
+                creaza(g1, "ThA", 3),
+                creaza(gMain, "Thc", 3),
+                creaza(gMain, "Thd", 3),
+                creaza(g2, "Th1", 4),
+                creaza(g2, "Th2", 5),
+        };
+
+        for (Thread t : fire) t.start();
+        gMain.list();
+        for (Thread t : fire) t.join();   
+    }
+}
