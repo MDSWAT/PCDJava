@@ -1,0 +1,150 @@
+import java.util.Random;
+import java.util.ArrayList;
+import java.util.List;
+
+public class LucrareLaborator {
+
+    static int[] mas = new int[100];
+
+    public static void main(String[] args) throws InterruptedException {
+
+       
+        Random rand = new Random();
+        for (int i = 0; i < mas.length; i++) {
+            mas[i] = rand.nextInt(100) + 1;
+        }
+
+        System.out.println("Tabloul generat:");
+        for (int val : mas) {
+            System.out.print(val + " ");
+        }
+        System.out.println("\n");
+
+        // 2. Pornim cele două fire de execuție
+        Thread th1 = new Thread(new Th1(), "Th1");
+        Thread th2 = new Thread(new Th2(), "Th2");
+
+        th1.start();
+        th2.start();
+
+        th1.join();
+        th2.join();
+
+        afiseazaCuIntarziere("Lucrarea de laborator a fost efectuata de: Munteanu Gabriel, grupa Cr-231fr");
+    }
+
+    static void afiseazaCuIntarziere(String text) throws InterruptedException {
+        System.out.println();
+        for (char c : text.toCharArray()) {
+            System.out.print(c);
+            Thread.sleep(1000);
+        }
+        System.out.println();
+    }
+
+  
+    static void prelucreaza(int[] tablou, boolean cautPar, String numeFir, String conditie) {
+        System.out.println("[" + numeFir + "] " + conditie);
+
+        // Colectăm numerele care respectă condiția,
+        // parcurgând tabloul DE LA ULTIMUL ELEMENT spre primul
+        List<Integer> gasite = new ArrayList<>();
+        for (int i = tablou.length - 1; i >= 0; i--) {
+            if (cautPar) {
+                if (tablou[i] % 2 == 0) {
+                    gasite.add(tablou[i]);
+                }
+            } else {
+                if (tablou[i] % 2 != 0) {
+                    gasite.add(tablou[i]);
+                }
+            }
+        }
+
+        if (gasite.isEmpty()) {
+            System.out.println("[" + numeFir + "] Nu există numere care să respecte condiția.");
+            return;
+        }
+
+        System.out.println("[" + numeFir + "] Numerele găsite (de la ultimul element spre primul): " + gasite);
+
+        List<Integer> rezultate = new ArrayList<>();
+        int i = 0;
+        while (i < gasite.size()) {
+            if (i + 1 < gasite.size()) {
+                int a = gasite.get(i);
+                int b = gasite.get(i + 1);
+                int suma = a + b;
+                rezultate.add(suma);
+                System.out.println("[" + numeFir + "] Pereche: " + a + " + " + b + " = " + suma);
+                i += 2;
+            } else {
+                int ramas = gasite.get(i);
+                rezultate.add(ramas);
+                System.out.println("[" + numeFir + "] Fără pereche: " + ramas);
+                i += 1;
+            }
+        }
+
+        System.out.println("[" + numeFir + "] Rezultatele perechilor: " + rezultate);
+
+        int sumarFinal = 0;
+
+        if (rezultate.size() == 1) {
+            sumarFinal = rezultate.get(0);
+            System.out.println("[" + numeFir + "] Un singur rezultat: " + sumarFinal);
+        }
+        if (rezultate.size() == 2) {
+            sumarFinal = rezultate.get(0) + rezultate.get(1);
+            System.out.println("[" + numeFir + "] Suma celor 2 rezultate: "
+                    + rezultate.get(0) + " + " + rezultate.get(1) + " = " + sumarFinal);
+        }
+        if (rezultate.size() == 3) {
+            sumarFinal = rezultate.get(0) + rezultate.get(1) + rezultate.get(2);
+            System.out.println("[" + numeFir + "] Suma celor 3 rezultate: "
+                    + rezultate.get(0) + " + " + rezultate.get(1) + " + " + rezultate.get(2)
+                    + " = " + sumarFinal);
+        }
+        if (rezultate.size() == 4) {
+            sumarFinal = rezultate.get(0) + rezultate.get(1) + rezultate.get(2) + rezultate.get(3);
+            System.out.println("[" + numeFir + "] Suma celor 4 rezultate: "
+                    + rezultate.get(0) + " + " + rezultate.get(1) + " + "
+                    + rezultate.get(2) + " + " + rezultate.get(3)
+                    + " = " + sumarFinal);
+        }
+        if (rezultate.size() > 4) {
+            
+            for (int k = 0; k < rezultate.size(); k++) {
+                sumarFinal += rezultate.get(k);
+            }
+            System.out.println("[" + numeFir + "] Suma celor " + rezultate.size()
+                    + " rezultate = " + sumarFinal);
+        }
+
+        System.out.println("[" + numeFir + "] SUMAR FINAL = " + sumarFinal);
+    }
+}
+
+class Th1 implements Runnable {
+    @Override
+    public void run() {
+        LucrareLaborator.prelucreaza(
+                LucrareLaborator.mas,
+                true,
+                "Th1",
+                "Condiție 1: Sumele numerelor PARE două câte două, începând căutarea și sumarea de la ULTIMUL element."
+        );
+    }
+}
+
+class Th2 implements Runnable {
+    @Override
+    public void run() {
+        LucrareLaborator.prelucreaza(
+                LucrareLaborator.mas,
+                false,
+                "Th2",
+                "Condiție 2: Sumele numerelor IMPARE două câte două, începând căutarea și sumarea de la ULTIMUL element."
+        );
+    }
+}
