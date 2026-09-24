@@ -1,4 +1,5 @@
 import java.util.function.Consumer;
+//comentariu
 
 public class Th1 extends Thread {
 
